@@ -102,6 +102,7 @@ CONTAINS
     USE HCOX_SoilNox_Mod,       ONLY : HCOX_SoilNox_Init
     USE HCOX_DustDead_Mod,      ONLY : HCOX_DustDead_Init
     USE HCOX_DustGinoux_Mod,    ONLY : HCOX_DustGinoux_Init
+    USE HCOX_Plastics_Mod,      ONLY : HCOX_Plastics_Init   !yxzhang
     USE HCOX_SeaSalt_Mod,       ONLY : HCOX_SeaSalt_Init
     USE HCOX_GFED_Mod,          ONLY : HCOX_GFED_Init
     USE HCOX_MEGAN_Mod,         ONLY : HCOX_MEGAN_Init
@@ -273,6 +274,16 @@ CONTAINS
        ENDIF
 
        !--------------------------------------------------------------------
+       ! Plastic emissions, yxzhang
+       !--------------------------------------------------------------------
+       CALL HCOX_Plastics_Init( HcoState, 'Plastics', ExtState, RC )
+       IF ( RC /= HCO_SUCCESS ) THEN
+          ErrMsg = 'Error encountered in "HCOX_Plastics_Init"!'
+          CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+          RETURN
+       ENDIF
+
+       !--------------------------------------------------------------------
        ! SeaSalt aerosol extension
        !--------------------------------------------------------------------
        CALL HCOX_SeaSalt_Init( HcoState, 'SeaSalt', ExtState, RC )
@@ -416,6 +427,7 @@ CONTAINS
     USE HCOX_SoilNox_Mod,       ONLY : HCOX_SoilNox_Run
     USE HCOX_DustDead_Mod,      ONLY : HCOX_DustDead_Run
     USE HCOX_DustGinoux_Mod,    ONLY : HCOX_DustGinoux_Run
+    USE HCOX_Plastics_Mod,      ONLY : HCOX_Plastics_Run  ! yxzhang
     USE HCOX_SeaSalt_Mod,       ONLY : HCOX_SeaSalt_Run
     USE HCOX_Megan_Mod,         ONLY : HCOX_Megan_Run
     USE HCOX_GFED_Mod,          ONLY : HCOX_GFED_Run
@@ -608,6 +620,18 @@ CONTAINS
        ENDIF
 
        !--------------------------------------------------------------------
+       ! Plastics emissions, yxzhang
+       !--------------------------------------------------------------------
+       IF ( ExtState%Plastics > 0 ) THEN
+          CALL HCOX_Plastics_Run( ExtState, HcoState, RC )
+          IF ( RC /= HCO_SUCCESS ) THEN
+             ErrMsg = 'Error encountered in "HCOX_Plastics_Run"!'
+             CALL HCO_ERROR( ErrMsg, RC, ThisLoc )
+             RETURN
+          ENDIF
+       ENDIF
+
+       !--------------------------------------------------------------------
        ! Sea salt aerosols
        !--------------------------------------------------------------------
        IF ( ExtState%SeaSalt > 0 ) THEN
@@ -759,6 +783,7 @@ CONTAINS
     USE HCOX_SoilNox_Mod,       ONLY : HCOX_SoilNox_Final
     USE HCOX_DustDead_Mod,      ONLY : HCOX_DustDead_Final
     USE HCOX_DustGinoux_Mod,    ONLY : HCOX_DustGinoux_Final
+    USE HCOX_Plastics_Mod,      ONLY : HCOX_Plastics_Final  !yxzhang
     USE HCOX_SeaSalt_Mod,       ONLY : HCOX_SeaSalt_Final
     USE HCOX_MEGAN_Mod,         ONLY : HCOX_MEGAN_Final
     USE HCOX_GFED_Mod,          ONLY : HCOX_GFED_Final
@@ -838,6 +863,10 @@ CONTAINS
 #endif
           IF ( ExtState%DustGinoux > 0 ) THEN
              CALL HCOX_DustGinoux_Final( ExtState )
+          ENDIF
+
+          IF ( ExtState%Plastics > 0 ) THEN  ! yxzhang
+             CALL HCOX_Plastics_Final( ExtState )
           ENDIF
 
           IF ( ExtState%SeaSalt > 0  ) THEN

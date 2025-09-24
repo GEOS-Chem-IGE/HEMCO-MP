@@ -102,6 +102,7 @@ MODULE HCOX_STATE_MOD
      INTEGER                   :: DustDead       ! DEAD dust model
      INTEGER                   :: DustGinoux     ! Ginoux dust emissions
      INTEGER                   :: DustAlk        ! Dust alkalinity
+     INTEGER                   :: Plastics       ! Plastic emissions, yxzhang
      INTEGER                   :: LightNOx       ! Lightning NOx
      INTEGER                   :: ParaNOx        ! PARANOX ship emissions
      INTEGER                   :: SoilNOx        ! Soil NOx emissions
@@ -293,6 +294,7 @@ CONTAINS
     ExtState%DustDead       = -1
     ExtState%DustGinoux     = -1
     ExtState%DustAlk        = -1
+    ExtState%Plastics       = -1  !yxzhang
     ExtState%LightNOx       = -1
     ExtState%ParaNOx        = -1
     ExtState%SoilNOx        = -1
